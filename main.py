@@ -2,23 +2,7 @@
 
 # attached style.css and script.js are required
 
-def key_imports():
-    global tiers #imports tiers and items from text file
-    tiers = []
-    with open('tiers.txt', 'r') as f:
-        tiers = f.read().splitlines() 
-
-    global items
-    items = []
-    with open('items.txt', 'r') as f:
-        for i in f.readlines():
-            items.append(i.split("-"))
-
-def save_html(name, html):
-    with open(f'{name}.html','a') as f:
-            f.write(html)
-
-start_html ="""
+START_HTML: str ="""
 <!DOCTYPE html>
 <html>
   <head>
@@ -31,26 +15,48 @@ start_html ="""
       not mobile friendly at all sry</p>
 """
 
-end_html= """
+END_HTML= """
 <br>
 <p>thank you for using this tierlist! :D</p>
 </body>
 </html>
 """
 
-dropzone_template = """<div class="dropzone" ondragover="onDragOver(event);" ondrop="onDrop(event);">{}<br></div>"""
+DROPZONE_TEMPLATE = """<div class="dropzone" ondragover="onDragOver(event);" ondrop="onDrop(event);">{}<br></div>"""
 
-draggable_template = """<div id="{item_text}" draggable="true" ondragstart="onDragStart(event);" class="draggable" > {item_text} </div>"""
+DRAGGABLE_TEMPLATE = """<div id="{item_text}" draggable="true" ondragstart="onDragStart(event);" class="draggable" > {item_text} </div>"""
+
+    
+def key_imports() -> tuple[list[str], list[str]]:
+    tiers = []
+    with open('tiers.txt', 'r') as f:
+        tiers = f.read().splitlines() 
+
+    items = []
+    with open('items.txt', 'r') as f:
+        for i in f.readlines():
+            items.append(i.split("-"))
+
+    return tiers, items
+
+def save_html(name: str, html: str):
+    with open(f'{name}.html','a') as f:
+            f.write(html)
 
 
-key_imports()
-for tier in tiers:
-    start_html += dropzone_template.format(tier)
+def main():
+    global START_HTML
+    tiers, items = key_imports()
+    for tier in tiers:
+        START_HTML += DROPZONE_TEMPLATE.format(tier)
 
-temp_items = ""
-for item in items:
-    temp_items += draggable_template.format(item_text=item[0].replace("\n",""))
+    temp_items = ""
+    for item in items:
+        temp_items += DRAGGABLE_TEMPLATE.format(item_text=item[0].replace("\n",""))
 
-start_html += dropzone_template.format(temp_items)
-start_html += end_html
-save_html(input("name the file\t>\t"), start_html)
+    START_HTML += DROPZONE_TEMPLATE.format(temp_items)
+    START_HTML += END_HTML
+    save_html(input("name the file\t>\t"), START_HTML)
+
+if __name__ == "__main__":
+    main()
